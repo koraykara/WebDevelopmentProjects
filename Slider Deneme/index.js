@@ -76,6 +76,41 @@ $(document).ready(function () {
        el.addEventListener('change', () => table.draw());
    });
 
+    // Add event listener for position checkboxes
+    $('.position-checkbox').on('change', function () {
+      updatePositionFilter();
+      table.draw();
+  });
+
+  // Function to update the position filter
+  function updatePositionFilter() {
+      var selectedPositions = [];
+
+      // Loop through checkboxes and add selected positions to the array
+      $('.position-checkbox:checked').each(function () {
+          var position = $(this).data('position');
+          selectedPositions.push(position);
+      });
+
+      // Add or update the DataTable search based on selected positions
+      $.fn.dataTable.ext.search.pop(); // Remove previous position filter
+
+      $.fn.dataTable.ext.search.push(
+          function (settings, data, dataIndex) {
+              if (settings.nTable.id === tableId) {
+                  var position = data[1]; // Assuming position is in the second column
+                  return (selectedPositions.length === 0 || selectedPositions.includes(position));
+              } else {
+                  return true;
+              }
+          }
+      );
+  }
+
+  // Trigger initial position filter update and table draw
+  updatePositionFilter();
+  table.draw();
+
  
    // Ion Range Slider
    var $inputFromAge = $(".inputFromAge"+ fullName),
